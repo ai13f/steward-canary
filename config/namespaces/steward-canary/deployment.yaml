@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canary
+  namespace: steward-canary
+  labels: {app: canary}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: canary}
+  template:
+    metadata:
+      labels: {app: canary}
+    spec:
+      securityContext: {fsGroup: 10001, runAsNonRoot: true}
+      containers:
+        - name: canary
+          image: ghcr.io/ai13f/steward-canary:v1.1.0@sha256:bf76c744e7aba434515fd97aa2e8c33ed0c20d4c179bedff6d50a4c63977ba6c
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet: {path: /readyz, port: 8080}
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {memory: 64Mi}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+            - {name: status-overlay, mountPath: /app/app/status.py, subPath: status.py, readOnly: true}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: canary-data}
+        - name: status-overlay
+          configMap: {name: canary-status-overlay}

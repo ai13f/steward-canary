@@ -1,0 +1,19 @@
+# Applied by hand once (`kubectl apply -f argo/application.yaml`), like the home cluster's other Applications.
+# Manual sync only: the steward selftest syncs it, exactly as the nightly steward syncs production git apps.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: steward-canary
+  namespace: argocd
+  labels: {app.kubernetes.io/part-of: steward-selftest}
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ai13f/steward-canary.git
+    path: config/namespaces/steward-canary
+    targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: steward-canary
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
