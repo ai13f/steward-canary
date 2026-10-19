@@ -4,7 +4,9 @@ metadata:
   name: canary-data
   namespace: steward-canary
 spec:
-  accessModes: [ReadWriteOnce]
+  accessModes:
+  - ReadWriteOnce
   storageClassName: longhorn
   resources:
-    requests: {storage: 1Gi}
+    requests:
+      storage: 1Gi

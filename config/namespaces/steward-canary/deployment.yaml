@@ -3,38 +3,64 @@ kind: Deployment
 metadata:
   name: canary
   namespace: steward-canary
-  labels: {app: canary}
+  labels: &id001
+    app: canary
 spec:
   replicas: 1
-  strategy: {type: Recreate}
+  strategy:
+    type: Recreate
   selector:
-    matchLabels: {app: canary}
+    matchLabels: *id001
   template:
     metadata:
-      labels: {app: canary}
+      labels: *id001
     spec:
-      securityContext: {fsGroup: 10001, runAsNonRoot: true}
+      securityContext:
+        fsGroup: 10001
       containers:
-        - name: canary
-          image: ghcr.io/ai13f/steward-canary:v1.1.0@sha256:bf76c744e7aba434515fd97aa2e8c33ed0c20d4c179bedff6d50a4c63977ba6c
-          ports:
-            - containerPort: 8080
-              protocol: TCP
-          readinessProbe:
-            httpGet: {path: /readyz, port: 8080}
-            periodSeconds: 5
-          livenessProbe:
-            httpGet: {path: /healthz, port: 8080}
-            periodSeconds: 10
-            failureThreshold: 3
-          resources:
-            requests: {cpu: 10m, memory: 32Mi}
-            limits: {memory: 64Mi}
-          volumeMounts:
-            - {name: data, mountPath: /data}
-            - {name: status-overlay, mountPath: /app/app/status.py, subPath: status.py, readOnly: true}
-      volumes:
+      - name: canary
+        image: ghcr.io/ai13f/steward-canary:v1.1.0@sha256:bf76c744e7aba434515fd97aa2e8c33ed0c20d4c179bedff6d50a4c63977ba6c
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8080
+          periodSeconds: 5
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          periodSeconds: 10
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 128Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 10001
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
         - name: data
-          persistentVolumeClaim: {claimName: canary-data}
+          mountPath: /data
         - name: status-overlay
-          configMap: {name: canary-status-overlay}
+          mountPath: /app/app/status.py
+          subPath: status.py
+          readOnly: true
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: canary-data
+      - name: status-overlay
+        configMap:
+          name: canary-status-overlay
