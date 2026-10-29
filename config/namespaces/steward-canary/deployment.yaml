@@ -6,7 +6,7 @@ metadata:
   labels: &id001
     app: canary
 spec:
-  replicas: 1
+  replicas: 0
   strategy:
     type: Recreate
   selector:
