@@ -6,7 +6,7 @@ metadata:
   labels: &id001
     app: canary
 spec:
-  replicas: 1
+  replicas: 0
   strategy:
     type: Recreate
   selector:
@@ -19,7 +19,7 @@ spec:
         fsGroup: 10001
       containers:
       - name: canary
-        image: ghcr.io/ai13f/steward-canary:v1.6.0@sha256:c6bb9215cb66c52527ea4d47ca873cc1c9a9feda756aa4f38b862a14bb76ddea
+        image: ghcr.io/ai13f/steward-canary:v1.1.0@sha256:bf76c744e7aba434515fd97aa2e8c33ed0c20d4c179bedff6d50a4c63977ba6c
         ports:
         - name: http
           containerPort: 8080
