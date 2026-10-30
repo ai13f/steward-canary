@@ -19,7 +19,7 @@ spec:
         fsGroup: 10001
       containers:
       - name: canary
-        image: ghcr.io/ai13f/steward-canary:v1.10.0@sha256:ec8f62af234e07151707de8cada34aa17666a9388174525d1f24f34fdd19639a
+        image: ghcr.io/ai13f/steward-canary:v1.10.1@sha256:61e5882e84d95d7e7f7f83b27c247db9f6e93572274caa1a4cc1df3b222cc10e
         ports:
         - name: http
           containerPort: 8080
