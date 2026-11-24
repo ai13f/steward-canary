@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: canary-status-overlay
+  namespace: steward-canary
+  annotations:
+    hotfix/mounted-at: /app/app/status.py
+    hotfix/reason: uptime_s in seconds (ai13f/steward-canary-src#1)
+data:
+  status.py: "\"\"\"The /status payload (steward overlay: uptime in seconds, ai13f/steward-canary-src#1).\"\
+    \"\"\n\nfrom __future__ import annotations\n\nimport time\n\n\ndef uptime_s(started:\
+    \ float) -> float:\n    \"\"\"Seconds since `started` (a time.monotonic() value).\"\
+    \"\"\n    return round(time.monotonic() - started, 3)\n\n\ndef snapshot(started:\
+    \ float, ticks: int, schema_version: int) -> dict:\n    return {\"uptime_s\":\
+    \ uptime_s(started), \"ticks\": ticks, \"schema_version\": schema_version}\n"
