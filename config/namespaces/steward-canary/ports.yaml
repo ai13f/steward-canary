@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: canary-ports
+  namespace: steward-canary
+  labels: &id001
+    app: canary-ports
+spec:
+  replicas: 0
+  selector:
+    matchLabels: *id001
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      containers:
+      - name: ports
+        image: ghcr.io/ai13f/steward-canary:v1.1.0@sha256:bf76c744e7aba434515fd97aa2e8c33ed0c20d4c179bedff6d50a4c63977ba6c
+        ports:
+        - containerPort: 9000
+          protocol: TCP
+        - containerPort: 8080
+          protocol: TCP
